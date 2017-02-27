@@ -103,6 +103,7 @@ public abstract class BaseBot
 
     /**
      * This is called once Discord4J issues the {@link ReadyEvent}.
+     *
      * @see ReadyEvent
      */
     public abstract void init();
