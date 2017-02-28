@@ -114,17 +114,17 @@ public abstract class BaseBot
         bot = new ClientBuilder().withToken( token ).login();
     }
 
-    private Logger getLogger()
+    public Logger getLogger()
     {
         return LOGGER;
     }
 
-    private IDiscordClient getBot()
+    public IDiscordClient getBot()
     {
         return bot;
     }
 
-    private Gson getGSON()
+    public Gson getGSON()
     {
         return GSON;
     }
