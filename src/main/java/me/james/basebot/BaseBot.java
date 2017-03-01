@@ -4,6 +4,7 @@ import com.google.gson.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.logging.*;
+import me.james.basebot.command.*;
 import sx.blah.discord.api.*;
 import sx.blah.discord.api.events.*;
 import sx.blah.discord.handle.impl.events.*;
@@ -92,6 +93,20 @@ public abstract class BaseBot
             e.printStackTrace();
         }
         return null;
+    }
+
+    @EventSubscriber
+    public void onMessage( MessageReceivedEvent e )
+    {
+        String[] args = e.getMessage().getContent().split( " " );
+        Command c = Command.getCommand( args[0] );
+        if ( c != null )
+        {
+            if ( c.isPrivateMessageRequired() && !e.getMessage().getChannel().isPrivate() )
+                return;
+            getLogger().info( "User '" + e.getMessage().getAuthor().getName() + "' (" + e.getMessage().getAuthor().getID() + ") issued command '" + args[0] + "' in channel '" + e.getMessage().getChannel().getName() + "' (" + e.getMessage().getChannel().getID() + ") (" + c.doCommand( args, e.getMessage().getAuthor(), e.getMessage().getChannel() ) + ")" );
+        } else if ( e.getMessage().getChannel().isPrivate() )
+            getLogger().info( "User " + e.getMessage().getAuthor().getName() + " (" + e.getMessage().getAuthor().getID() + ") sent a message:\n" + e.getMessage().getContent() );
     }
 
     @EventSubscriber
