@@ -3,11 +3,14 @@ package me.james.basebot;
 import com.google.gson.*;
 import java.io.*;
 import java.nio.file.*;
+import java.util.*;
 import java.util.logging.*;
 import me.james.basebot.command.*;
 import sx.blah.discord.api.*;
 import sx.blah.discord.api.events.*;
 import sx.blah.discord.handle.impl.events.*;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.*;
 
 public abstract class BaseBot
@@ -15,7 +18,9 @@ public abstract class BaseBot
     private final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private final String token;
     private final Logger LOGGER = Logger.getLogger( "BaseBot" );
+    private final File CONFIG_DIR = new File( "guild_cofigs" );
     private IDiscordClient bot;
+    private HashMap<IGuild, JsonObject> configs = new HashMap<>();
 
     public BaseBot( String token )
     {
@@ -83,7 +88,16 @@ public abstract class BaseBot
         return null;
     }
 
+    /***
+     * @deprecated Use {@link BaseBot#fileToJSON(File)} instead.
+     */
+    @Deprecated
     public static JsonObject fileToJSON( String path )
+    {
+        return fileToJSON( new File( path ) );
+    }
+
+    public static JsonObject fileToJSON( File path )
     {
         try
         {
@@ -104,15 +118,16 @@ public abstract class BaseBot
         {
             if ( c.isPrivateMessageRequired() && !e.getMessage().getChannel().isPrivate() )
                 return;
-            getLogger().info( "User '" + e.getMessage().getAuthor().getName() + "' (" + e.getMessage().getAuthor().getID() + ") issued command '" + args[0] + "' in channel '" + e.getMessage().getChannel().getName() + "' (" + e.getMessage().getChannel().getID() + ") (" + c.doCommand( args, e.getMessage().getAuthor(), e.getMessage().getChannel() ) + ")" );
+            getLogger().info( "User '" + e.getMessage().getAuthor().getName() + "' (" + e.getMessage().getAuthor().getStringID() + ") issued command '" + args[0] + "' in channel '" + e.getMessage().getChannel().getName() + "' (" + e.getMessage().getChannel().getStringID() + ") (" + c.doCommand( args, e.getMessage().getAuthor(), e.getMessage().getChannel() ) + ")" );
         } else if ( e.getMessage().getChannel().isPrivate() )
-            getLogger().info( "User " + e.getMessage().getAuthor().getName() + " (" + e.getMessage().getAuthor().getID() + ") sent a message:\n" + e.getMessage().getContent() );
+            getLogger().info( "User " + e.getMessage().getAuthor().getName() + " (" + e.getMessage().getAuthor().getStringID() + ") sent a message:\n" + e.getMessage().getContent() );
     }
 
     @EventSubscriber
     public void onReady( ReadyEvent e )
     {
         getLogger().info( "Discord4J sent ready event." );
+        reloadConfigs();
         init();
     }
 
@@ -127,6 +142,33 @@ public abstract class BaseBot
     {
         getLogger().info( "Logging in..." );
         bot = new ClientBuilder().withToken( token ).login();
+    }
+
+    public void reloadConfigs()
+    {
+        configs.clear();
+        if ( !CONFIG_DIR.exists() )
+            CONFIG_DIR.mkdir();
+        for ( File f : CONFIG_DIR.listFiles() )
+        {
+            if ( !f.isFile() || !f.getName().endsWith( ".json" ) )
+                continue;
+            IGuild g = getBot().getGuildByID( Long.parseUnsignedLong( f.getName().substring( 0, f.getName().length() - 5 ) ) );
+            if ( g == null )
+                continue;
+            configs.put( g, BaseBot.fileToJSON( f ) );
+            getLogger().info( "Loaded configuration for guild " + g.getName() );
+        }
+    }
+
+    public JsonObject getConfig( IGuild g )
+    {
+        return ( !configs.containsKey( g ) ? null : configs.get( g ) );
+    }
+
+    public JsonObject getConfigValue( IGuild g, String name, Object value )
+    {
+        return ( !configs.containsKey( g ) ? null : configs.get( g ).get( name ).getAsJsonObject() );
     }
 
     public Logger getLogger()
