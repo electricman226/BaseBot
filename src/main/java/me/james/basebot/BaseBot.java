@@ -18,7 +18,7 @@ public abstract class BaseBot
     private final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private final String token;
     private final Logger LOGGER = Logger.getLogger( "BaseBot" );
-    private final File CONFIG_DIR = new File( "guild_cofigs" );
+    private final File CONFIG_DIR = new File( "guild_configs" );
     private IDiscordClient bot;
     private HashMap<IGuild, JsonObject> configs = new HashMap<>();
 
