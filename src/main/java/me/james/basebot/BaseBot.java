@@ -165,7 +165,7 @@ public abstract class BaseBot
                 continue;
             try
             {
-                Files.write( Paths.get( CONFIG_DIR + "/" + g.getLongID() + ".json" ), "{}".getBytes(), StandardOpenOption.WRITE );
+                Files.write( Paths.get( CONFIG_DIR + "/" + g.getLongID() + ".json" ), "{}".getBytes(), StandardOpenOption.CREATE );
             } catch ( IOException e )
             {
                 getLogger().info( "Unable to create guild configuration for guild " + g.getName() + " (" + g.getLongID() + ")" );
@@ -176,7 +176,7 @@ public abstract class BaseBot
 
     public void saveConfig( IGuild g ) throws IOException
     {
-        Files.write( new File( CONFIG_DIR.getPath() + "/" + g.getLongID() + ".json" ).toPath(), getGSON().toJson( configs.get( g ) ).getBytes(), StandardOpenOption.WRITE );
+        Files.write( new File( CONFIG_DIR.getPath() + "/" + g.getLongID() + ".json" ).toPath(), getGSON().toJson( configs.get( g ) ).getBytes(), StandardOpenOption.CREATE );
     }
 
     public JsonObject getConfig( IGuild g )
