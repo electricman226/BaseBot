@@ -184,7 +184,7 @@ public abstract class BaseBot
         return ( !configs.containsKey( g ) ? null : configs.get( g ) );
     }
 
-    public JsonObject getConfigValue( IGuild g, String name, Object value )
+    public JsonObject getConfigValue( IGuild g, String name )
     {
         return ( !configs.containsKey( g ) ? null : configs.get( g ).get( name ).getAsJsonObject() );
     }
