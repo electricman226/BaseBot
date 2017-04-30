@@ -159,11 +159,24 @@ public abstract class BaseBot
             configs.put( g, BaseBot.fileToJSON( f ) );
             getLogger().info( "Loaded configuration for guild " + g.getName() );
         }
+        for ( IGuild g : getBot().getGuilds() )
+        {
+            if ( configs.containsKey( g ) )
+                continue;
+            try
+            {
+                Files.write( Paths.get( CONFIG_DIR + "/" + g.getLongID() + ".json" ), "{}".getBytes(), StandardOpenOption.WRITE );
+            } catch ( IOException e )
+            {
+                getLogger().info( "Unable to create guild configuration for guild " + g.getName() + " (" + g.getLongID() + ")" );
+                e.printStackTrace();
+            }
+        }
     }
 
     public void saveConfig( IGuild g ) throws IOException
     {
-        Files.write( new File( CONFIG_DIR.getPath() + "/" + g.getLongID() + ".json" ).toPath(), getGSON().toJson( configs.get( g ) ).getBytes(), StandardOpenOption.CREATE );
+        Files.write( new File( CONFIG_DIR.getPath() + "/" + g.getLongID() + ".json" ).toPath(), getGSON().toJson( configs.get( g ) ).getBytes(), StandardOpenOption.WRITE );
     }
 
     public JsonObject getConfig( IGuild g )
