@@ -161,6 +161,11 @@ public abstract class BaseBot
         }
     }
 
+    public void saveConfig( IGuild g ) throws IOException
+    {
+        Files.write( new File( CONFIG_DIR.getPath() + "/" + g.getLongID() + ".json" ).toPath(), getGSON().toJson( configs.get( g ) ).getBytes(), StandardOpenOption.CREATE );
+    }
+
     public JsonObject getConfig( IGuild g )
     {
         return ( !configs.containsKey( g ) ? null : configs.get( g ) );
