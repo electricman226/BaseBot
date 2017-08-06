@@ -6,7 +6,7 @@ import sx.blah.discord.handle.obj.*;
 
 public abstract class Command
 {
-    private static HashMap<String, Class<Command>> cmds = new HashMap<>();
+    private static HashMap< String, Class< Command > > cmds = new HashMap<>();
 
     public static void registerClass( String name, Class clazz )
     {
@@ -27,6 +27,16 @@ public abstract class Command
     }
 
     public boolean isPrivateMessageRequired()
+    {
+        return false;
+    }
+
+    public boolean isBotOwnerSenderRequired()
+    {
+        return false;
+    }
+
+    public boolean isGuildOwnerSenderRequired()
     {
         return false;
     }

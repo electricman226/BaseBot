@@ -20,7 +20,7 @@ public abstract class BaseBot
     private final Logger LOGGER = Logger.getLogger( "BaseBot" );
     private final File CONFIG_DIR = new File( "guild_configs" );
     private IDiscordClient bot;
-    private HashMap<IGuild, JsonObject> configs = new HashMap<>();
+    private HashMap< IGuild, JsonObject > configs = new HashMap<>();
 
     public BaseBot( String token )
     {
@@ -118,6 +118,10 @@ public abstract class BaseBot
         {
             if ( c.isPrivateMessageRequired() && !e.getMessage().getChannel().isPrivate() )
                 return;
+            if ( c.isBotOwnerSenderRequired() && e.getAuthor().getLongID() != bot.getApplicationOwner().getLongID() )
+                return;
+            if ( c.isGuildOwnerSenderRequired() && e.getGuild().getOwnerLongID() != e.getAuthor().getLongID() )
+                return;
             getLogger().info( "User '" + e.getMessage().getAuthor().getName() + "' (" + e.getMessage().getAuthor().getStringID() + ") issued command '" + args[0] + "' in channel '" + e.getMessage().getChannel().getName() + "' (" + e.getMessage().getChannel().getStringID() + ") (" + c.doCommand( args, e.getMessage().getAuthor(), e.getMessage().getChannel() ) + ")" );
         } else if ( e.getMessage().getChannel().isPrivate() )
             getLogger().info( "User " + e.getMessage().getAuthor().getName() + " (" + e.getMessage().getAuthor().getStringID() + ") sent a message:\n" + e.getMessage().getContent() );
@@ -184,9 +188,14 @@ public abstract class BaseBot
         return ( !configs.containsKey( g ) ? null : configs.get( g ) );
     }
 
-    public JsonObject getConfigValue( IGuild g, String name )
+    public boolean hasConfig( IGuild g, String name )
     {
-        return ( !configs.containsKey( g ) ? null : configs.get( g ).get( name ).getAsJsonObject() );
+        return ( configs.containsKey( g ) && configs.get( g ).has( name ) );
+    }
+
+    public JsonElement getConfigValue( IGuild g, String name )
+    {
+        return ( !configs.containsKey( g ) ? null : configs.get( g ).get( name ) );
     }
 
     public Logger getLogger()
