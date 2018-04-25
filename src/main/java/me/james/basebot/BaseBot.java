@@ -9,7 +9,7 @@ import me.james.basebot.command.*;
 import sx.blah.discord.api.*;
 import sx.blah.discord.api.events.*;
 import sx.blah.discord.handle.impl.events.*;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.*;
 import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.*;
 
@@ -122,7 +122,7 @@ public abstract class BaseBot
                 return;
             if ( c.isGuildOwnerSenderRequired() && e.getGuild().getOwnerLongID() != e.getAuthor().getLongID() )
                 return;
-            getLogger().info( "User '" + e.getMessage().getAuthor().getName() + "' (" + e.getMessage().getAuthor().getStringID() + ") issued command '" + args[0] + "' in channel '" + e.getMessage().getChannel().getName() + "' (" + e.getMessage().getChannel().getStringID() + ") (" + c.doCommand( args, e.getMessage().getAuthor(), e.getMessage().getChannel() ) + ")" );
+            getLogger().info( "User '" + e.getMessage().getAuthor().getName() + "' (" + e.getMessage().getAuthor().getStringID() + ") issued command '" + args[0] + "' in channel '" + e.getMessage().getChannel().getName() + "' (" + e.getMessage().getChannel().getStringID() + ") (" + c.doCommand( args, e.getMessage().getAuthor(), e.getMessage().getChannel(), e.getMessage() ) + ")" );
         } else if ( e.getMessage().getChannel().isPrivate() )
             getLogger().info( "User " + e.getMessage().getAuthor().getName() + " (" + e.getMessage().getAuthor().getStringID() + ") sent a message:\n" + e.getMessage().getContent() );
     }

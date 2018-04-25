@@ -41,5 +41,5 @@ public abstract class Command
         return false;
     }
 
-    public abstract String doCommand( String[] args, IUser issuer, IChannel issuerChan );
+    public abstract String doCommand( String[] args, IUser issuer, IChannel issuerChan, IMessage msg );
 }
