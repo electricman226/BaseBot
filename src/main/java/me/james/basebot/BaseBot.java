@@ -15,7 +15,7 @@ import sx.blah.discord.util.*;
 
 public abstract class BaseBot
 {
-    private final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private final String token;
     private final Logger LOGGER = Logger.getLogger( "BaseBot" );
     private final File CONFIG_DIR = new File( "guild_configs" );
@@ -42,11 +42,13 @@ public abstract class BaseBot
                     if ( record.getLevel().intValue() >= Level.WARNING.intValue() )
                     {
                         System.err.write( message.getBytes() );
-                    } else
+                    }
+                    else
                     {
                         System.out.write( message.getBytes() );
                     }
-                } catch ( Exception exception )
+                }
+                catch ( Exception exception )
                 {
                     reportError( null, exception, ErrorManager.FORMAT_FAILURE );
                 }
@@ -64,7 +66,8 @@ public abstract class BaseBot
         {
             login();
             getBot().getDispatcher().registerListener( this );
-        } catch ( DiscordException e )
+        }
+        catch ( DiscordException e )
         {
             getLogger().severe( "Unable to login with given token. (" + e.getErrorMessage() + ")" );
             System.exit( -1 );
@@ -81,7 +84,8 @@ public abstract class BaseBot
         try
         {
             return Files.readAllLines( Paths.get( tokenFile.getPath() ) ).get( 0 );
-        } catch ( IOException e )
+        }
+        catch ( IOException e )
         {
             e.printStackTrace();
         }
@@ -102,7 +106,8 @@ public abstract class BaseBot
         try
         {
             return new JsonParser().parse( new FileReader( path ) ).getAsJsonObject();
-        } catch ( FileNotFoundException e )
+        }
+        catch ( FileNotFoundException e )
         {
             e.printStackTrace();
         }
@@ -123,7 +128,8 @@ public abstract class BaseBot
             if ( c.isGuildOwnerSenderRequired() && e.getGuild().getOwnerLongID() != e.getAuthor().getLongID() )
                 return;
             getLogger().info( "User '" + e.getMessage().getAuthor().getName() + "' (" + e.getMessage().getAuthor().getStringID() + ") issued command '" + args[0] + "' in channel '" + e.getMessage().getChannel().getName() + "' (" + e.getMessage().getChannel().getStringID() + ") (" + c.doCommand( args, e.getMessage().getAuthor(), e.getMessage().getChannel(), e.getMessage() ) + ")" );
-        } else if ( e.getMessage().getChannel().isPrivate() )
+        }
+        else if ( e.getMessage().getChannel().isPrivate() )
             getLogger().info( "User " + e.getMessage().getAuthor().getName() + " (" + e.getMessage().getAuthor().getStringID() + ") sent a message:\n" + e.getMessage().getContent() );
     }
 
@@ -170,7 +176,8 @@ public abstract class BaseBot
             try
             {
                 Files.write( Paths.get( CONFIG_DIR + "/" + g.getLongID() + ".json" ), "{}".getBytes(), StandardOpenOption.CREATE );
-            } catch ( IOException e )
+            }
+            catch ( IOException e )
             {
                 getLogger().info( "Unable to create guild configuration for guild " + g.getName() + " (" + g.getLongID() + ")" );
                 e.printStackTrace();
